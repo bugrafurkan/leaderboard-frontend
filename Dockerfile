@@ -1,14 +1,31 @@
-# React için basit Dockerfile
-FROM node:18-alpine
+# 1. Aşama: Build aşaması
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
-COPY package.json ./
+# Package.json ve package-lock.json dosyalarını kopyala
+COPY package.json package-lock.json ./
+
+# Bağımlılıkları yükle
 RUN npm install
 
+# Tüm kaynak kodları kopyala
 COPY . .
+
+# Build işlemini gerçekleştir
 RUN npm run build
 
-CMD ["npm", "start"]
+# 2. Aşama: Nginx ile Serve Etme
+FROM nginx:stable-alpine
 
-EXPOSE 3000
+# Nginx config ayarlarını eklemek istersen
+COPY ./nginx.conf /etc/nginx/nginx.conf
+
+# Build edilen dosyaları Nginx'in public dizinine kopyala
+COPY --from=build /app/build /usr/share/nginx/html
+
+# Nginx portunu aç
+EXPOSE 80
+
+# Nginx başlat
+CMD ["nginx", "-g", "daemon off;"]

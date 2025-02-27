@@ -178,7 +178,7 @@ const Leaderboard: React.FC = () => {
   useEffect(() => {
     const fetchPlayers = async () => {
       try {
-        const response = await axios.get('http://leaderboard-backend:3000/api/v1/leaderboard');
+        const response = await axios.get('http://localhost:3000/api/v1/leaderboard');
         console.log(response.data);
         const formattedPlayers = response.data.top100Entries.map((entry: any, index: number) => ({
           ...entry,
@@ -194,7 +194,7 @@ const Leaderboard: React.FC = () => {
     fetchPlayers();
 
     // WebSocket bağlantısı
-    const socket = io('http://leaderboard-backend');
+    const socket = io('http://localhost:3000');
 
     socket.on('leaderboardUpdate', (data: any) => {
       const formattedPlayers = data.top100Entries.map((entry: any, index: number) => ({
@@ -293,7 +293,7 @@ const Leaderboard: React.FC = () => {
                   setSearchPlayerId(e.target.value);
                   const id = parseInt(e.target.value);
                   if (!isNaN(id)) {
-                    axios.get(`http://leaderboard-backend/api/v1/leaderboard?searchPlayerId=${id}`)
+                    axios.get(`http://localhost:3000/api/v1/leaderboard?searchPlayerId=${id}`)
                         .then(response => {
                           console.log('Search response:', response.data); // Debug log ekleyelim
                           if (response.data.searchedPlayerRange && response.data.searchedPlayerRange.length > 0) {
